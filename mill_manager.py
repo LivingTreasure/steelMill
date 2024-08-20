@@ -16,6 +16,7 @@ class Mill:
     furnace_level = 1
     rail_cap_level = 1
     metallurgy_level = 1
+    union_favor = 0
     oreToSteel = 10
     fuelToSteel = 10
     steelProduced = 5
@@ -25,11 +26,29 @@ class Mill:
     derail_event = False
     priceDrop_event = False
     priceSpike_event = False
+    priceSpike_percent = 15
+    union_percent = 3
+    fire_percent = 7
+    priceDrop_percent = 10
+    noEvent_percent = 60
+    derail_percent = 5
+    event_weights = {'union': union_percent, 'fire': fire_percent, 'derail': derail_percent, 'priceDrop': priceDrop_percent, 'priceSpike': priceSpike_percent, 'none': noEvent_percent}
+    floor_manager = None
 
-event_weights = {'union': 3, 'fire': 7, 'derail': 5, 'priceDrop': 10, 'priceSpike': 15, 'none': 60}
+class Manager:
+    first_name = ['James', 'Thomas', 'Harold', 'Henry', 'Arnold', 'Andrew', 'Lewis', 'Gareth', 'Winston', 'Leo', 'William', 'Richard', 'Faftmoza', 'Doet', 'Cacul', 'Krug', 'Frederick']
+    last_name = ['Stewart', 'Fitzgerald', 'Frick', 'Smith', 'Yoder', 'La Rusu', 'Henderson', 'Joe', 'Stevens', 'Williams', 'Caculson', 'Standley']
+    full_name = None
+    title = None
+    trait = None
+    salary = None
+    title_list = ['Steel Worker', 'Chemist', 'Metalurgist', 'Trucker', 'Union Buster', 'Miner', 'Salesman', 'Monopolizer']
+    trait_list = ['Lazy', 'over achiver', 'clumsy', 'union sympathizer', 'organized', 'perfectionist', 'efficient']
 
 def create_mill():
     mill = Mill()
+    floor_manager = Manager()
+    generateManager(floor_manager)
     week_counter = 7
     weeks_passed = 0
     labor_cost = 0
@@ -41,7 +60,7 @@ def create_mill():
     print("Welcome to your Mill")
     print("Money: " + str(mill.money) + " Fuel: " + str(mill.fuel) + " Ore: " + str(mill.ore) + " Steel: " + str(mill.steel) + "\n")
 
-    while mill.money > 0:
+    while mill.money >= 0:
         day_over = False
         print("1: Buy " + str(mill.rail_cap) + " tons Fuel for $" + str(mill.rail_cap * mill.fuel_cost))
         print("2: Buy " + str(mill.rail_cap) + "  tons ore for $" + str(mill.rail_cap * mill.ore_cost))
@@ -60,7 +79,7 @@ def create_mill():
                 continue
 
         if action == 1:
-            if mill.money > mill.rail_cap * mill.fuel_cost:
+            if mill.money >= mill.rail_cap * mill.fuel_cost:
                 buyFuel(mill)
                 resource_cost = resource_cost + (mill.rail_cap * mill.fuel_cost)
                 day_over = True
@@ -68,7 +87,7 @@ def create_mill():
                 prCyan("\nInsufficient Funds\n")
 
         elif action == 2:
-            if mill.money > mill.rail_cap * mill.ore_cost:
+            if mill.money >= mill.rail_cap * mill.ore_cost:
                 buyOre(mill)
                 resource_cost = resource_cost + (mill.rail_cap * mill.ore_cost)
                 day_over = True
@@ -93,16 +112,19 @@ def create_mill():
         elif action == 5:
             improveMill(mill)
         elif action == 6:
-            manageWorkForce(mill)
+            manageWorkForce(mill, floor_manager)
         else:
             prCyan("\ninvalid action\n")
 
         if day_over:
             if week_counter > 0:
                 week_counter  = week_counter - 1
+                if week_counter == 0:
+                    prEvent("The week is almost over, your labor will cost: " + str(mill.workers * mill.pay_rate))
             else:
                 if mill.priceDrop_event == True:
                     mill.ore_cost = mill.ore_cost + 11.5
+                generateManager(floor_manager)
                 mill.steel_cost = random.randint(68, 92)
                 week_counter = 7
                 weeks_passed = weeks_passed + 1
@@ -140,47 +162,70 @@ def createSteel(mill):
 
 def improveMill(mill):
     print("\nSelect a mill improvements: ")
-    print("1: Improve furnaces level " + str(mill.furnace_level))
-    print("2: Improve rail line capacity level " + str(mill.rail_cap_level))
-    print("3: Invest in Metallurgy lab level " + str(mill.metallurgy_level))
-    print("4: Invest in Chemist lab level " + str(mill.chemist_level))
+    print("1: Improve furnaces - $"+ str(3000 * mill.furnace_level) +"  level " + str(mill.furnace_level))
+    print("2: Improve rail line capacity - $"+ str(1000 * mill.rail_cap_level) +" level " + str(mill.rail_cap_level))
+    print("3: Invest in Metallurgy lab - $"+ str(1000 * mill.metallurgy_level) +" level " + str(mill.metallurgy_level))
+    print("4: Invest in Chemist lab - $"+ str(700 * mill.chemist_level) +" level " + str(mill.chemist_level))
     print("5: Return to mill")
     if mill.fire_event == True:
-        prEvent("\n10: Put out the fire ")
+        prEvent("\n10: Put out the fire - $500")
     if mill.derail_event == True:
-        prEvent("\n11: Fix the derailment ")
+        prEvent("\n11: Fix the derailment - $1000")
     
     s = input("Choose your action...")
     action = int(s)
     if action == 1:
-        mill.furnace_level = mill.furnace_level + 1
-        mill.steelProduced = mill.steelProduced + 2
-        mill.money = mill.money - 3000
+        if mill.money > (3000 * mill.furnace_level):
+            mill.money = mill.money - (3000 * mill.furnace_level)
+            mill.furnace_level = mill.furnace_level + 1
+            mill.steelProduced = mill.steelProduced + 2
+        else:
+            prCyan("Not enough money\n")
     elif action == 2:
-        mill.rail_cap_level = mill.rail_cap_level + 1
-        mill.rail_cap = mill.rail_cap + 5
-        mill.money = mill.money - 1000
+        if mill.money > (1000 * mill.rail_cap_level):
+            mill.money = mill.money - (1000 * mill.rail_cap_level)
+            mill.rail_cap_level = mill.rail_cap_level + 1
+            mill.rail_cap = mill.rail_cap + 5
+        else:
+            prCyan("Not enough money\n")
     elif action == 3:
-        mill.metallurgy_level = mill.metallurgy_level + 1
-        mill.oreToSteel = mill.oreToSteel - 1.5
-        mill.money = mill.money - 1000
+        if mill.money > (1000 * mill.metallurgy_level):
+            mill.money = mill.money - (1000 * mill.metallurgy_level)
+            mill.metallurgy_level = mill.metallurgy_level + 1
+            mill.oreToSteel = mill.oreToSteel - 1.5
+        else:
+            prCyan("Not enough money\n")
     elif action == 4:
-        mill.chemist_level = mill.chemist_level + 1
-        mill.fuelToSteel = mill.fuelToSteel - 1.5
-        mill.money = mill.money - 1000
+        if mill.money > (700 * mill.chemist_level):
+            mill.money = mill.money - (700 * mill.chemist_level)
+            mill.chemist_level = mill.chemist_level + 1
+            mill.fuelToSteel = mill.fuelToSteel - 2
+        else:
+            prCyan("Not enough money\n")
     elif action == 10:
-        mill.money = mill.money - 500
-        mill.fire_event = False
+        if mill.money > 500:
+            mill.money = mill.money - 500
+            mill.fire_event = False
+        else:
+            prCyan("Not enough money\n")
     elif action == 11:
-        mill.money = mill.money - 1000
-        mill.rail_cap = mill.rail_cap + 8.5
-        mill.derail_event = False
+        if mill.money > 1000:
+            mill.money = mill.money - 1000
+            mill.rail_cap = mill.rail_cap + 8.5
+            mill.derail_event = False
+        else:
+            prCyan("Not enough money\n")
     else:
         prCyan("\nInvalid Action\n")
     
-def manageWorkForce(mill):
+    prCyan("\nMoney: " + str(mill.money) + " Fuel: " + str(mill.fuel) + " Ore: " + str(mill.ore) + " Steel: " + str(mill.steel) + "\n")
+    
+def manageWorkForce(mill, floor_manager):
     print("\nSelect how you want to manage your workforce: ")
+    if mill.floor_manager is not None:
+        print("Your Manager: " + mill.floor_manager.full_name + " Title: " + mill.floor_manager.title + " Trait: " + mill.floor_manager.trait)
     print("1: adjust total workforce")
+    print("2: Hire Manager")
     if mill.union_event == True:
         prEvent("\n10: break up the union $2000")
     s = input("Choose your action...")
@@ -193,10 +238,19 @@ def manageWorkForce(mill):
             mill.workers = int(s)/100
         else:
             print("invalid percentage")
-    if action == 10:
+    elif action == 2:
+        prCyan("\navailable Manager: ")
+        prCyan(floor_manager.full_name + " Title: " + floor_manager.title + " Trait: " + floor_manager.trait + " salary: " + str(floor_manager.salary) + "\n")
+        s = input("Hire Him? 1: yes 2: no...")
+        action = int(s)
+        if action == 1:
+            mill.floor_manager = floor_manager
+
+    elif action == 10:
         mill.money = mill.money - 2000
         mill.payRate = mill.payRate - 500
         mill.union_event = False
+    prCyan("\nMoney: " + str(mill.money) + " Fuel: " + str(mill.fuel) + " Ore: " + str(mill.ore) + " Steel: " + str(mill.steel) + "\n")
 
 def percent_return(d):
     val_sum = sum(d.values())
@@ -204,7 +258,7 @@ def percent_return(d):
     return next(iter(choices(population=list(d_pct), weights=d_pct.values(), k=1)))
 
 def eventGenerator(mill):
-    event = percent_return(event_weights)
+    event = percent_return(mill.event_weights)
     if event == "union":
         mill.union_event = True
         prEvent("Workers are trying to unionize")
@@ -221,27 +275,35 @@ def eventGenerator(mill):
         mill.priceSpike_event = True
         prEvent("Steel price spike")
     elif event == "none":
-        prEvent("Operating as normal")
+        prEvent("No New Events")
 
 def eventHandler(mill):
     if mill.union_event == True:
         prEvent("Your workers are trying to unionize - Labor cost will go up unless you break them up")
-        mill.pay_rate = mill.pay_Rate + 500
-    elif mill.derail_event == True:
+        mill.pay_rate = mill.pay_rate + 500
+    if mill.derail_event == True:
         prEvent("There has been a derailment in the rail yard - You can only use trucks until you fix it")
-        mill.rail_cap = mill.rail_cap - 8.5
-    elif mill.fire_event == True:
+        if mill.rail_cap > 9:
+            mill.rail_cap = mill.rail_cap - 8.5
+    if mill.fire_event == True:
         prEvent("There is a fire on the shop floor - you need to put it out")
-    elif mill.priceDrop_event == True:
+    if mill.priceDrop_event == True:
         prEvent("The Ore market has crashed - take advantage while you can")
         mill.ore_cost = mill.ore_cost - 11.5
-    elif mill.priceSpike_event == True:
+    if mill.priceSpike_event == True:
         prEvent("The market for steel is soaring - take advantage while you can")
-        mill.steel_cost = mill.steel_cost + 18.5
+        mill.steel_cost = mill.steel_cost + 35
+
+def generateManager (floor_manager):
+    floor_manager.full_name = random.choice(floor_manager.first_name) + " " + random.choice(floor_manager.last_name)
+    floor_manager.title = random.choice(floor_manager.title_list)
+    floor_manager.trait = random.choice(floor_manager.trait_list)
+    floor_manager.salary = random.randint(40, 200)
 
 def prCyan(skk): print("\033[96m {}\033[00m" .format(skk))
 def prEvent(skk): print("\033[46m {}\033[00m" .format(skk))
 
 if __name__ == '__main__':
     create_mill()
+
 

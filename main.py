@@ -1,4 +1,5 @@
 import pyxel
+import time
 from Mill import Mill
 
 SCREEN_WIDTH = 256
@@ -11,6 +12,10 @@ class App:
     def __init__(self):
         pyxel.init(SCREEN_HEIGHT, SCREEN_WIDTH)
         pyxel.mouse(True)
+
+        pyxel.images[0].load(0, 0, "resources/interior1_animation_set1.png")
+        pyxel.images[1].load(0, 0, "resources/interior1_animation_set2.png")
+        pyxel.images[2].load(0, 0, "resources/interior1_animation_set3.png")
 
         self.mill = Mill()
         self.show_furnace_gui = False
@@ -67,10 +72,15 @@ class App:
             pyxel.rectb(10, 213, 27, 15, FRAME_COLOR)
             pyxel.text(12, 218, "Return", FRAME_COLOR)
 
+            frame = pyxel.frame_count // 15 % 3
+            print(frame)
+            pyxel.blt(103, 73, frame, 0, 0, 80, 52, None, None, 3)
+
+
         if self.show_railyard_gui:
             pyxel.rectb(10, 195, 15, 15, FRAME_COLOR)
             pyxel.text(12, 200, "Buy", FRAME_COLOR)
-            pyxel.text(26, 200, str(self.mill.rail_cap) + "  tons ore for $" + str(self.mill.rail_cap * self.mill.ore_cost), FRAME_COLOR)
+            pyxel.text(19, 193, str(self.mill.rail_cap) + "  tons ore for $" + str(self.mill.rail_cap * self.mill.ore_cost), FRAME_COLOR)
 
             pyxel.rectb(10, 213, 15, 15, FRAME_COLOR)
             pyxel.text(12, 218, "Buy", FRAME_COLOR)

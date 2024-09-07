@@ -59,4 +59,6 @@ def improveMill(mill):
     else:
         prCyan("\nInvalid Action\n")
     
-    prCyan("\nMoney: " + str(mill.money) + " Fuel: " + str(mill.fuel) + " Ore: " + str(mill.ore) + " Steel: " + str(mill.steel) + "\n")
+    prCyan("\nMoney: " + str(mill.money) + " Fuel: " + str(mill.fuel) + " Ore: " + str(mill.ore) + " Steel billets: " + str(mill.billets) + " Steel blooms: " + str(mill.blooms) + " Steel slabs: " + str(mill.slabs))
+    
+

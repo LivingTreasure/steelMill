@@ -16,19 +16,19 @@ def generateManager (floor_manager):
     floor_manager.trait = random.choice(floor_manager.trait_list)
     floor_manager.salary = random.randint(40, 200)
 
-def setManagerStats(manager, mill):
+def setManagerStats(manager, mill, market):
     mill.new_manager_flag = False
     print(manager.full_name)
     if manager.title == 'Steel Worker':
-        mill.fuel_cost = mill.fuel_cost - 2
-        mill.ore_cost = mill.ore_cost - 1
-        mill.steel_cost = mill.steel_cost + 3
+        market.fuel_cost = market.fuel_cost - 2
+        market.ore_cost = market.ore_cost - 1
+        market.billet_cost = market.billet_cost + 3
         mill.furnace_level_cost = mill.furnace_level_cost - 300
     elif manager.title == 'Chemist':
-        mill.fuel_cost = mill.fuel_cost - 4
+        market.fuel_cost = market.fuel_cost - 4
         mill.chemist_level_cost = mill.chemist_level_cost - 300
     elif manager.title == 'Metalurgist':
-        mill.ore_cost = mill.ore_cost - 3
+        market.ore_cost = market.ore_cost - 3
         mill.metallurgy_level_cost = mill.metallurgy_level_cost - 300
     elif manager.title == 'Trucker':
         mill.derail_cost = mill.derail_cost - 500
@@ -44,32 +44,32 @@ def setManagerStats(manager, mill):
     elif manager.title == 'Miner':
         mill.priceDrop_percent = mill.priceDrop_percent + 5
         mill.noEvent_percent = mill.noEvent_percent - 5
-        mill.fuel_cost = mill.fuel_cost - 2
-        mill.ore_cost = mill.ore_cost - 2
+        market.fuel_cost = market.fuel_cost - 2
+        market.ore_cost = market.ore_cost - 2
     elif manager.title == 'Salesman':
         mill.priceSpike_percent = mill.priceSpike_percent + 7
         mill.noEvent_percent = mill.noEvent_percent - 7
-        mill.steel_cost = mill.steel_cost + 3
+        mill.billet_cost = mill.billet_cost + 3
     elif manager.title == 'Monopolizer':
-        mill.steel_cost = mill.steel_cost + 5
+        mill.billet_cost = mill.billet_cost + 5
     elif manager.title == 'Fire Fighter':
         mill.fire_cost = mill.fire_cost - 300
         mill.fire_percent = mill.fire_percent - 5
         mill.noEvent_percent = mill.noEvent_percent + 5
-        mill.fuel_cost = mill.fuel_cost - 1
+        market.fuel_cost = market.fuel_cost - 1
 
     if mill.old_manager is not None:
         mill.old_manager.full_name
         if mill.old_manager.title == 'Steel Worker':
-            mill.fuel_cost = mill.fuel_cost + 2
-            mill.ore_cost = mill.ore_cost + 1
-            mill.steel_cost = mill.steel_cost - 3
+            market.fuel_cost = market.fuel_cost + 2
+            market.ore_cost = market.ore_cost + 1
+            market.billet_cost = market.billet_cost - 3
             mill.furnace_level_cost = mill.furnace_level_cost + 300
         elif mill.old_manager.title == 'Chemist':
-            mill.fuel_cost = mill.fuel_cost + 4
+            market.fuel_cost = market.fuel_cost + 4
             mill.chemist_level_cost = mill.chemist_level_cost + 300
         elif mill.old_manager.title == 'Metalurgist':
-            mill.ore_cost = mill.ore_cost + 3
+            market.ore_cost = market.ore_cost + 3
             mill.metallurgy_level_cost = mill.metallurgy_level_cost + 300
         elif mill.old_manager.title == 'Trucker':
             mill.derail_cost = mill.derail_cost + 500
@@ -85,18 +85,19 @@ def setManagerStats(manager, mill):
         elif mill.old_manager.title == 'Miner':
             mill.priceDrop_percent = mill.priceDrop_percent - 5
             mill.noEvent_percent = mill.noEvent_percent + 5
-            mill.fuel_cost = mill.fuel_cost + 2
-            mill.ore_cost = mill.ore_cost + 2
+            market.fuel_cost = market.fuel_cost + 2
+            market.ore_cost = market.ore_cost + 2
         elif mill.old_manager.title == 'Salesman':
             mill.priceSpike_percent = mill.priceSpike_percent - 7
             mill.noEvent_percent = mill.noEvent_percent + 7
-            mill.steel_cost = mill.steel_cost - 3
+            market.billet_cost = market.billet_cost - 3
         elif mill.old_manager.title == 'Monopolizer':
-            mill.steel_cost = mill.steel_cost - 5
+            market.billet_cost = market.billet_cost - 5
         elif mill.old_manager.title == 'Fire Fighter':
             mill.fire_cost = mill.fire_cost + 300
             mill.fire_percent = mill.fire_percent + 5
             mill.noEvent_percent = mill.noEvent_percent - 5
-            mill.fuel_cost = mill.fuel_cost + 1
+            market.fuel_cost = market.fuel_cost + 1
 
     manager.trait
+

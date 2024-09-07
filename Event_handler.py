@@ -26,7 +26,7 @@ def eventGenerator(mill):
     elif event == "none":
         prEvent("No New Events")
 
-def eventHandler(mill):
+def eventHandler(mill, market):
     if mill.union_event == True:
         prEvent("Your workers are trying to unionize - Labor cost will go up unless you break them up")
         mill.pay_rate = mill.pay_rate + 500
@@ -39,7 +39,8 @@ def eventHandler(mill):
         prEvent("There is a fire on the shop floor - you need to put it out")
     if mill.priceDrop_event == True:
         prEvent("The Ore market has crashed - take advantage while you can")
-        mill.ore_cost = mill.ore_cost - 11.5
+        mill.ore_cost = market.ore_cost - 11.5
     if mill.priceSpike_event == True:
         prEvent("The market for steel is soaring - take advantage while you can")
-        mill.steel_cost = mill.steel_cost + 35
+        market.billet_cost = market.billet_cost + 35
+

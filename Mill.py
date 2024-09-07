@@ -2,14 +2,13 @@ class Mill:
     money = 1000
     fuel = 200
     ore = 100
-    steel = 0
+    billets = 0
+    blooms = 0
+    slabs = 0
     workers = 1
     quality = 5
     rail_cap = 10
     pay_rate = 650
-    fuel_cost = 10
-    ore_cost = 20
-    steel_cost = 72.5
     furnace_level = 1
     furnace_level_cost = 3000
     rail_cap_level = 1
@@ -42,3 +41,5 @@ class Mill:
     floor_manager = None
     old_manager = None
     new_manager_flag = False
+    day_over = 0
+

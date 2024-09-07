@@ -39,8 +39,10 @@ def manageWorkForce(mill, new_manager):
     elif action == 10:
         if mill.money > mill.union_event_cost:
             mill.money = mill.money - mill.union_event_cost
-            mill.payRate = mill.payRate - 500
+            mill.payRate = mill.pay_rate - 500
             mill.union_event = False
         else:
             prCyan("Not enough money\n")
-    prCyan("\nMoney: " + str(mill.money) + " Fuel: " + str(mill.fuel) + " Ore: " + str(mill.ore) + " Steel: " + str(mill.steel) + "\n")
+    prCyan("\nMoney: " + str(mill.money) + " Fuel: " + str(mill.fuel) + " Ore: " + str(mill.ore) + " Steel billets: " + str(mill.billets) + " Steel blooms: " + str(mill.blooms) + " Steel slabs: " + str(mill.slabs))
+
+
